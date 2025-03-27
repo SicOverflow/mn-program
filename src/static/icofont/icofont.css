@@ -1,0 +1,80 @@
+/*! 
+* @package IcoFont 
+* @version 1.0.1 
+* @author   
+* @copyright 2025 
+* @license - https://icofont.com/license/
+*/
+
+@font-face {
+  font-family: "IcoFont";
+  font-weight: normal;
+  font-style: "Regular";
+  src: url("./fonts/icofont.woff2") format("woff2"),
+       url("./fonts/icofont.woff") format("woff");
+}
+
+[class^="icofont-"], [class*=" icofont-"] {
+  font-family: 'IcoFont' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+.icofont-duotone.icofont-contacts:before {
+  content: "\13af3";
+}
+
+.icofont-duotone.icofont-contacts:after {
+  content: "\13af2";
+}
+
+.icofont-duotone.icofont-comment:before {
+  content: "\13aeb";
+}
+
+.icofont-duotone.icofont-comment:after {
+  content: "\13aea";
+}
+
+.icofont-duotone.icofont-home:before {
+  content: "\13b41";
+}
+
+.icofont-duotone.icofont-home:after {
+  content: "\13b40";
+}
+
+.icofont-duotone.icofont-groups:before {
+  content: "\13b3f";
+}
+
+.icofont-duotone.icofont-groups:after {
+  content: "\13b3e";
+}
+
+[class^="icofont-"].icofont-duotone,
+[class*=" icofont-"].icofont-duotone {
+  position: relative;
+}
+
+[class^="icofont-"].icofont-duotone:before,
+[class*=" icofont-"].icofont-duotone:before {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+[class^="icofont-"].icofont-duotone:after,
+[class*=" icofont-"].icofont-duotone:after {
+  opacity: 0.4;
+} 
