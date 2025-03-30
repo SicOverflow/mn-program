@@ -6,7 +6,7 @@
     </view>
 
     <!-- 标题 -->
-    <view class="title">个人/企业登录</view>
+    <view class="title">个人登录</view>
 
     <!-- 表单区域 -->
     <view class="form-container">
@@ -70,7 +70,11 @@
 </template>
 
 <script setup>
+import { useUserStore } from '../../store/user';
 import { ref, computed } from 'vue'
+
+// 获取 user store 实例
+const userStore = useUserStore();
 
 const form = ref({
   phone: '',
@@ -92,48 +96,62 @@ const handleBack = () => {
   uni.navigateBack()
 }
 
-const handleSendCode = () => {
-  if (counting.value) return
+// 发送验证码
+const handleSendCode = async () => {
+  if (counting.value) return;
   if (!/^1[3-9]\d{9}$/.test(form.value.phone)) {
     uni.showToast({
       title: '请输入正确的手机号',
       icon: 'none'
-    })
-    return
+    });
+    return;
   }
 
-  counting.value = true
-  countdown.value = 60
-  const timer = setInterval(() => {
-    countdown.value--
-    if (countdown.value <= 0) {
-      clearInterval(timer)
-      counting.value = false
+  try {
+    const res = await userStore.sendVerificationCode(form.value.phone);
+    if (res) {
+      counting.value = true;
+      countdown.value = 60;
+      const timer = setInterval(() => {
+        countdown.value--;
+        if (countdown.value <= 0) {
+          clearInterval(timer);
+          counting.value = false;
+        }
+      }, 1000);
+      
+      uni.showToast({
+        title: '验证码已发送',
+        icon: 'none'
+      });
     }
-  }, 1000)
+  } catch (error) {
+    console.error('发送验证码失败:', error);
+  }
+};
 
-  // TODO: 调用发送验证码接口
-  uni.showToast({
-    title: '验证码已发送',
-    icon: 'none'
-  })
-}
-
-const handleSubmit = () => {
-  if (!isFormValid.value) return
+// 提交表单
+const handleSubmit = async () => {
+  if (!isFormValid.value) return;
   
-  // TODO: 调用登录接口
-  uni.showToast({
-    title: '登录成功',
-    icon: 'success',
-    duration: 2000,
-    success: () => {
-      setTimeout(() => {
-        uni.navigateBack()
-      }, 2000)
+  try {
+    const res = await userStore.phoneLogin(form.value.phone, form.value.code, form.value.agreed);
+    if (res) {
+      uni.showToast({
+        title: '登录成功',
+        icon: 'success',
+        duration: 2000,
+        success: () => {
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 2000);
+        }
+      });
     }
-  })
-}
+  } catch (error) {
+    console.error('登录失败:', error);
+  }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -8,13 +8,15 @@
           <view class="avatar-body"></view>
         </view>
       </view>
-      <view class="login-text" @click="handleLogin">点击登录/注册</view>
+      <view class="login-text" @click="handleWechatLogin">微信登录</view>
+      <view class="sub-text">或</view>
+      <view class="login-text" @click="handlePhoneLogin">手机号登录</view>
       <view class="sub-text">可查看更多信息</view>
     </view>
 
     <!-- 功能列表 -->
     <view class="function-list">
-      <view class="function-item" @click="handleFunctionClick('online-resume')">
+      <view class="function-item" @click="handleMenuClick('online-resume')">
         <view class="item-left">
           <text class="item-icon">📄</text>
           <text class="item-text">在线简历</text>
@@ -22,7 +24,7 @@
         <text class="arrow-right">›</text>
       </view>
 
-      <view class="function-item" @click="handleFunctionClick('attachment-resume')">
+      <view class="function-item" @click="handleMenuClick('attachment-resume')">
         <view class="item-left">
           <text class="item-icon">📎</text>
           <text class="item-text">附件简历</text>
@@ -33,7 +35,7 @@
         </view>
       </view>
 
-      <view class="function-item" @click="handleFunctionClick('application-progress')">
+      <view class="function-item" @click="handleMenuClick('application-progress')">
         <view class="item-left">
           <text class="item-icon">📊</text>
           <text class="item-text">投递进度</text>
@@ -41,7 +43,7 @@
         <text class="arrow-right">›</text>
       </view>
 
-      <view class="function-item" @click="handleFunctionClick('permission-settings')">
+      <view class="function-item" @click="handleMenuClick('permission-settings')">
         <view class="item-left">
           <text class="item-icon">🔒</text>
           <text class="item-text">权限设置</text>
@@ -49,7 +51,7 @@
         <text class="arrow-right">›</text>
       </view>
 
-      <view class="function-item" @click="handleFunctionClick('feedback')">
+      <view class="function-item" @click="handleMenuClick('feedback')">
         <view class="item-left">
           <text class="item-icon">📝</text>
           <text class="item-text">意见反馈</text>
@@ -63,37 +65,104 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '../../store/user';
 import CustomTabBar from '@/components/custom-tab-bar/index.vue'
 
-// 默认头像 base64
-const handleLogin = () => {
+const userStore = useUserStore();
+const isLoggedIn = ref(false);
+const userInfo = ref(null);
+
+// 检查登录状态
+onMounted(async () => {
+  try {
+    const info = await userStore.getUserInfo();
+    if (info) {
+      isLoggedIn.value = true;
+      userInfo.value = info;
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+  }
+});
+
+// 处理微信登录
+const handleWechatLogin = async () => {
+  try {
+    const [error, loginRes] = await uni.login({
+      provider: 'weixin'
+    });
+    
+    if (error) {
+      throw new Error('微信登录失败');
+    }
+
+    // 获取用户信息
+    const [userError, userRes] = await uni.getUserInfo({
+      provider: 'weixin'
+    });
+
+    if (userError) {
+      throw new Error('获取用户信息失败');
+    }
+
+    // 调用后端登录接口
+    const res = await userStore.wechatLogin(loginRes.code, userRes.userInfo);
+    if (res) {
+      uni.showToast({
+        title: '登录成功',
+        icon: 'success'
+      });
+    }
+  } catch (error) {
+    console.error('微信登录失败:', error);
+    uni.showToast({
+      title: error.message || '登录失败',
+      icon: 'none'
+    });
+  }
+};
+
+// 跳转到手机号登录页面
+const handlePhoneLogin = () => {
   uni.navigateTo({
     url: '/pages/login-form/index'
-  })
-}
+  });
+};
 
-const handleFunctionClick = (type) => {
-  switch(type) {
+// 处理菜单项点击
+const handleMenuClick = (type) => {
+  if (!isLoggedIn.value && type !== 'phone-login') {
+    uni.showToast({
+      title: '请先登录',
+      icon: 'none'
+    });
+    return;
+  }
+
+  switch (type) {
+    case 'phone-login':
+      handlePhoneLogin();
+      break;
     case 'online-resume':
       uni.navigateTo({
         url: '/pages/resume/index'
-      })
-      break
+      });
+      break;
     case 'attachment-resume':
-      uni.showToast({ title: '暂未开放', icon: 'none' })
-      break
+      uni.showToast({ title: '暂未开放', icon: 'none' });
+      break;
     case 'application-progress':
-      uni.showToast({ title: '暂未开放', icon: 'none' })
-      break
+      uni.showToast({ title: '暂未开放', icon: 'none' });
+      break;
     case 'permission-settings':
-      uni.showToast({ title: '暂未开放', icon: 'none' })
-      break
+      uni.showToast({ title: '暂未开放', icon: 'none' });
+      break;
     case 'feedback':
-      uni.showToast({ title: '暂未开放', icon: 'none' })
-      break
+      uni.showToast({ title: '暂未开放', icon: 'none' });
+      break;
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

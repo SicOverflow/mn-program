@@ -1,748 +1,286 @@
 # 后端接口需求文档
 
-本文档详细描述了微信小程序前端项目所需的所有后端接口。
-
 ## 目录
-
 1. [用户认证相关接口](#用户认证相关接口)
-2. [简历相关接口](#简历相关接口)
-3. [商品相关接口](#商品相关接口)
-4. [消息相关接口](#消息相关接口)
-5. [其他功能接口](#其他功能接口)
+2. [微信小程序接口](#微信小程序接口)
+3. [简历相关接口](#简历相关接口)
+4. [通用接口规范](#通用接口规范)
 
 ## 用户认证相关接口
 
 ### 1. 发送验证码
-
-**接口地址**：`/api/auth/sendVerificationCode`
-
-**请求方式**：POST
-
+**接口地址**：`/api/auth/code`  
+**请求方式**：POST  
 **请求参数**：
-
 ```json
 {
-  "phone": "13800138000" // 手机号码
+  "phone": "13812345678"  // 手机号
 }
 ```
 
 **响应参数**：
-
 ```json
 {
   "code": 200,
-  "message": "验证码发送成功",
+  "message": "success",
   "data": {
-    "expireTime": 300 // 验证码有效期（秒）
+    "expireTime": 300  // 验证码有效期（秒）
   }
 }
 ```
 
-### 2. 登录/注册
-
-**接口地址**：`/api/auth/login`
-
-**请求方式**：POST
-
+### 2. 手机号登录/注册
+**接口地址**：`/api/auth/login`  
+**请求方式**：POST  
 **请求参数**：
-
 ```json
 {
-  "phone": "13800138000", // 手机号码
-  "code": "123456", // 验证码
-  "agreed": true // 是否同意用户协议
+  "phone": "13812345678",  // 手机号
+  "code": "123456",        // 验证码
+  "agreed": true          // 是否同意用户协议和隐私政策
 }
 ```
 
 **响应参数**：
-
 ```json
 {
   "code": 200,
-  "message": "登录成功",
+  "message": "success",
   "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // 用户令牌
-    "userId": "12345", // 用户ID
-    "isNewUser": false, // 是否新用户
+    "token": "eyJhb...",           // JWT token
     "userInfo": {
-      "phone": "138****8000", // 脱敏手机号
-      "nickname": "", // 昵称
-      "avatar": "" // 头像URL
+      "id": "12345",               // 用户ID
+      "phone": "13812345678",      // 手机号
+      "nickname": "用户昵称",       // 昵称
+      "avatar": "https://...",     // 头像URL
+      "hasResume": false           // 是否已创建简历
     }
   }
 }
 ```
 
 ### 3. 获取用户信息
-
-**接口地址**：`/api/user/info`
-
-**请求方式**：GET
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
+**接口地址**：`/api/user/info`  
+**请求方式**：GET  
+**请求头**：需要携带 token  
 **响应参数**：
-
 ```json
 {
   "code": 200,
   "message": "success",
   "data": {
-    "userId": "12345",
-    "phone": "138****8000",
-    "nickname": "用户昵称",
-    "avatar": "https://example.com/avatar.jpg",
-    "gender": "男",
-    "hasResume": true, // 是否有简历
-    "hasAttachmentResume": false // 是否有附件简历
+    "id": "12345",               // 用户ID
+    "phone": "13812345678",      // 手机号
+    "nickname": "用户昵称",       // 昵称
+    "avatar": "https://...",     // 头像URL
+    "hasResume": false           // 是否已创建简历
   }
 }
 ```
 
-### 4. 退出登录
+## 微信小程序接口
 
-**接口地址**：`/api/auth/logout`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
+### 1. 微信登录
+**接口地址**：`/api/wx/login`  
+**请求方式**：POST  
+**请求参数**：
+```json
+{
+  "code": "abc123",           // 微信登录code
+  "userInfo": {              // 微信用户信息
+    "nickName": "用户昵称",
+    "avatarUrl": "https://...",
+    "gender": 1,
+    "country": "China",
+    "province": "Guangdong",
+    "city": "Shenzhen"
+  }
+}
 ```
 
 **响应参数**：
-
 ```json
 {
   "code": 200,
-  "message": "退出成功",
-  "data": null
+  "message": "success",
+  "data": {
+    "token": "eyJhb...",           // JWT token
+    "userInfo": {
+      "id": "12345",               // 用户ID
+      "phone": "13812345678",      // 手机号（如果已绑定）
+      "nickname": "用户昵称",       // 昵称
+      "avatar": "https://...",     // 头像URL
+      "hasResume": false           // 是否已创建简历
+    }
+  }
+}
+```
+
+### 2. 获取手机号
+**接口地址**：`/api/wx/phone`  
+**请求方式**：POST  
+**请求头**：需要携带 token  
+**请求参数**：
+```json
+{
+  "code": "abc123"  // 手机号获取凭证
+}
+```
+
+**响应参数**：
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "phone": "13812345678"  // 解密后的手机号
+  }
 }
 ```
 
 ## 简历相关接口
 
-### 1. 上传头像
-
-**接口地址**：`/api/resume/uploadAvatar`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-```
-
-**请求参数**：
-
-```
-file: [二进制文件]
-```
-
+### 1. 获取简历信息
+**接口地址**：`/api/resume/info`  
+**请求方式**：GET  
+**请求头**：需要携带 token  
 **响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "上传成功",
-  "data": {
-    "avatarUrl": "https://example.com/avatars/user_12345.jpg"
-  }
-}
-```
-
-### 2. 创建/更新简历
-
-**接口地址**：`/api/resume/save`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
-```json
-{
-  "avatar": "https://example.com/avatars/user_12345.jpg",
-  "name": "张三",
-  "gender": "男",
-  "birthYear": "1995",
-  "education": "本科",
-  "workExperience": "3-5年",
-  "expectedPosition": "前端开发工程师",
-  "expectedSalary": "15k-20k",
-  "jobLocation": "北京"
-}
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "简历保存成功",
-  "data": {
-    "resumeId": "67890"
-  }
-}
-```
-
-### 3. 获取简历信息
-
-**接口地址**：`/api/resume/info`
-
-**请求方式**：GET
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**响应参数**：
-
 ```json
 {
   "code": 200,
   "message": "success",
   "data": {
-    "resumeId": "67890",
-    "avatar": "https://example.com/avatars/user_12345.jpg",
-    "name": "张三",
-    "gender": "男",
-    "birthYear": "1995",
-    "education": "本科",
-    "workExperience": "3-5年",
-    "expectedPosition": "前端开发工程师",
-    "expectedSalary": "15k-20k",
-    "jobLocation": "北京",
-    "createTime": "2023-05-20 14:30:00",
-    "updateTime": "2023-05-21 10:15:00"
-  }
-}
-```
-
-### 4. 上传附件简历
-
-**接口地址**：`/api/resume/uploadAttachment`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-```
-
-**请求参数**：
-
-```
-file: [二进制文件]
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "上传成功",
-  "data": {
-    "attachmentUrl": "https://example.com/attachments/resume_67890.pdf",
-    "fileName": "个人简历.pdf"
-  }
-}
-```
-
-## 商品相关接口
-
-### 1. 获取商品分类列表
-
-**接口地址**：`/api/product/categories`
-
-**请求方式**：GET
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": [
-    {
-      "id": "pottery",
-      "name": "陶艺与黏土类"
+    "id": "12345",                // 简历ID
+    "name": "张三",               // 姓名
+    "phone": "13812345678",       // 手机号
+    "email": "example@mail.com",  // 邮箱
+    "education": {                // 教育经历
+      "school": "XX大学",
+      "major": "计算机科学",
+      "degree": "本科",
+      "graduationYear": 2024
     },
-    {
-      "id": "fabric",
-      "name": "布艺类"
-    },
-    {
-      "id": "bamboo",
-      "name": "木竹藤艺类"
-    },
-    {
-      "id": "paper",
-      "name": "纸艺类"
-    },
-    {
-      "id": "other",
-      "name": "其他类"
-    }
-  ]
-}
-```
-
-### 2. 获取商品列表
-
-**接口地址**：`/api/product/list`
-
-**请求方式**：GET
-
-**请求参数**：
-
-```
-category: pottery  // 商品分类ID，可选
-page: 1            // 页码，默认1
-pageSize: 10       // 每页数量，默认10
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "total": 100,
-    "pages": 10,
-    "currentPage": 1,
-    "list": [
+    "workExperience": [          // 工作经历
       {
-        "id": 1,
-        "name": "陶艺作品1",
-        "price": 59.9,
-        "sales": 25,
-        "image": "https://example.com/images/products/pottery/1.jpg",
-        "category": "pottery",
-        "description": "精美陶艺作品，手工制作",
-        "stock": 50
-      },
-      // 更多商品...
-    ]
-  }
-}
-```
-
-### 3. 获取商品详情
-
-**接口地址**：`/api/product/detail`
-
-**请求方式**：GET
-
-**请求参数**：
-
-```
-id: 1  // 商品ID
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "id": 1,
-    "name": "陶艺作品1",
-    "price": 59.9,
-    "originalPrice": 69.9,
-    "sales": 25,
-    "images": [
-      "https://example.com/images/products/pottery/1_1.jpg",
-      "https://example.com/images/products/pottery/1_2.jpg",
-      "https://example.com/images/products/pottery/1_3.jpg"
-    ],
-    "category": "pottery",
-    "description": "精美陶艺作品，手工制作，材质优良...",
-    "specifications": [
-      {
-        "name": "尺寸",
-        "value": "10cm x 15cm"
-      },
-      {
-        "name": "材质",
-        "value": "优质陶土"
+        "company": "XX公司",
+        "position": "前端开发",
+        "startDate": "2020-01",
+        "endDate": "2022-12",
+        "description": "工作描述..."
       }
     ],
-    "stock": 50,
-    "createTime": "2023-05-01 10:00:00"
-  }
-}
-```
-
-### 4. 商品购买接口
-
-**接口地址**：`/api/order/create`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
-```json
-{
-  "productId": 1,
-  "quantity": 2,
-  "addressId": 123
-}
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "订单创建成功",
-  "data": {
-    "orderId": "202305270001",
-    "totalAmount": 119.8,
-    "paymentUrl": "https://example.com/payment/202305270001"
-  }
-}
-```
-
-## 消息相关接口
-
-### 1. 获取消息列表
-
-**接口地址**：`/api/message/list`
-
-**请求方式**：GET
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
-```
-type: system  // 消息类型：system(系统通知)、my(我的消息)、replies(回复我的)、likes(收到的赞)
-page: 1       // 页码，默认1
-pageSize: 20  // 每页数量，默认20
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "total": 50,
-    "pages": 3,
-    "currentPage": 1,
-    "unreadCount": 5,
-    "list": [
+    "skills": ["JavaScript", "Vue", "小程序开发"],  // 技能标签
+    "attachments": [             // 附件列表
       {
-        "id": "msg001",
-        "type": "system",
-        "sender": "系统",
-        "content": "您的简历已被查看10次",
-        "time": "2023-05-26 14:30:00",
-        "isRead": false
-      },
-      // 更多消息...
-    ]
+        "id": "file123",
+        "name": "个人简历.pdf",
+        "url": "https://..."
+      }
+    ],
+    "updateTime": "2024-03-30 12:00:00"  // 最后更新时间
   }
 }
 ```
 
-### 2. 发送消息
-
-**接口地址**：`/api/message/send`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
+### 2. 更新简历
+**接口地址**：`/api/resume/update`  
+**请求方式**：POST  
+**请求头**：需要携带 token  
 **请求参数**：
-
 ```json
 {
-  "receiverId": "user002", // 接收者ID
-  "content": "您好，我对您的简历很感兴趣，请问您方便聊一下吗？"
+  "name": "张三",               // 姓名
+  "phone": "13812345678",       // 手机号
+  "email": "example@mail.com",  // 邮箱
+  "education": {                // 教育经历
+    "school": "XX大学",
+    "major": "计算机科学",
+    "degree": "本科",
+    "graduationYear": 2024
+  },
+  "workExperience": [          // 工作经历
+    {
+      "company": "XX公司",
+      "position": "前端开发",
+      "startDate": "2020-01",
+      "endDate": "2022-12",
+      "description": "工作描述..."
+    }
+  ],
+  "skills": ["JavaScript", "Vue", "小程序开发"]  // 技能标签
 }
 ```
 
 **响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "发送成功",
-  "data": {
-    "messageId": "msg123",
-    "sendTime": "2023-05-27 15:45:00"
-  }
-}
-```
-
-### 3. 标记消息已读
-
-**接口地址**：`/api/message/read`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
-```json
-{
-  "messageIds": ["msg001", "msg002"] // 消息ID数组
-}
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "标记成功",
-  "data": null
-}
-```
-
-### 4. 获取未读消息数量
-
-**接口地址**：`/api/message/unreadCount`
-
-**请求方式**：GET
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**响应参数**：
-
 ```json
 {
   "code": 200,
   "message": "success",
   "data": {
-    "total": 8,
-    "system": 2,
-    "my": 1,
-    "replies": 3,
-    "likes": 2
+    // 返回更新后的完整简历信息，格式同"获取简历信息"接口
   }
 }
 ```
 
-## 其他功能接口
-
-### 1. 投递简历
-
-**接口地址**：`/api/job/apply`
-
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
+### 3. 上传简历附件
+**接口地址**：`/api/resume/upload`  
+**请求方式**：POST  
+**请求头**：需要携带 token  
+**请求格式**：multipart/form-data  
 **请求参数**：
-
-```json
-{
-  "jobId": "job001",
-  "resumeId": "67890",
-  "coverLetter": "我对贵公司的职位很感兴趣，希望能有机会加入贵公司..." // 可选
-}
-```
+- file: 文件对象（支持格式：pdf、doc、docx）
 
 **响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "投递成功",
-  "data": {
-    "applicationId": "app001",
-    "applyTime": "2023-05-27 16:00:00"
-  }
-}
-```
-
-### 2. 获取投递进度
-
-**接口地址**：`/api/job/applicationProgress`
-
-**请求方式**：GET
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
-```
-page: 1       // 页码，默认1
-pageSize: 10  // 每页数量，默认10
-```
-
-**响应参数**：
-
 ```json
 {
   "code": 200,
   "message": "success",
   "data": {
-    "total": 15,
-    "pages": 2,
-    "currentPage": 1,
-    "list": [
-      {
-        "applicationId": "app001",
-        "jobId": "job001",
-        "jobTitle": "前端开发工程师",
-        "companyName": "ABC科技有限公司",
-        "applyTime": "2023-05-27 16:00:00",
-        "status": "已查看", // 状态：已投递、已查看、面试邀请、不合适
-        "statusTime": "2023-05-28 10:30:00",
-        "feedback": "" // 反馈信息
-      },
-      // 更多投递记录...
-    ]
+    "id": "file123",
+    "name": "个人简历.pdf",
+    "url": "https://...",
+    "uploadTime": "2024-03-30 12:00:00"
   }
 }
 ```
 
-### 3. 意见反馈
+## 通用接口规范
 
-**接口地址**：`/api/feedback/submit`
+### 1. 请求规范
+- 所有请求都应该使用 HTTPS
+- API 版本号通过 URL 路径区分，当前版本为 v1
+- 请求头中的 token 格式：`Authorization: Bearer <token>`
 
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-```
-
-**请求参数**：
-
+### 2. 响应规范
+所有接口响应格式统一为：
 ```json
 {
-  "content": "希望能增加更多的职位分类",
-  "contactInfo": "13800138000", // 联系方式，可选
-  "images": [ // 图片URL数组，可选
-    "https://example.com/feedback/img1.jpg",
-    "https://example.com/feedback/img2.jpg"
-  ]
-}
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "反馈提交成功",
-  "data": {
-    "feedbackId": "fb001",
-    "submitTime": "2023-05-27 17:15:00"
+  "code": 200,           // 状态码：200成功，其他表示失败
+  "message": "success",  // 状态描述
+  "data": {             // 响应数据
+    // 具体数据字段
   }
 }
 ```
 
-### 4. 上传图片
+### 3. 错误码说明
+- 200: 成功
+- 400: 请求参数错误
+- 401: 未登录或 token 失效
+- 403: 权限不足
+- 404: 资源不存在
+- 500: 服务器内部错误
 
-**接口地址**：`/api/common/uploadImage`
+### 4. 安全要求
+1. 所有接口必须使用 HTTPS
+2. 用户密码等敏感信息传输时必须加密
+3. 防止 SQL 注入和 XSS 攻击
+4. 实现接口访问频率限制
+5. 敏感操作需要验证码或短信验证
 
-**请求方式**：POST
-
-**请求头**：
-
-```
-Authorization: Bearer {token}
-Content-Type: multipart/form-data
-```
-
-**请求参数**：
-
-```
-file: [二进制文件]
-type: feedback  // 图片类型：avatar(头像)、feedback(反馈)、other(其他)
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "上传成功",
-  "data": {
-    "imageUrl": "https://example.com/images/upload/20230527/img123.jpg"
-  }
-}
-```
-
-### 5. 获取用户协议和隐私政策
-
-**接口地址**：`/api/common/agreement`
-
-**请求方式**：GET
-
-**请求参数**：
-
-```
-type: user  // 协议类型：user(用户协议)、privacy(隐私政策)
-```
-
-**响应参数**：
-
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "title": "用户服务协议",
-    "content": "协议内容...",
-    "updateTime": "2023-01-01 00:00:00"
-  }
-}
-```
+### 5. 性能要求
+1. 接口响应时间不超过 1 秒
+2. 文件上传大小限制：10MB
+3. 图片上传格式限制：jpg、png、gif
+4. 文档上传格式限制：pdf、doc、docx
+5. 需要支持并发请求处理
