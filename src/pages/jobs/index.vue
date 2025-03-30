@@ -61,144 +61,145 @@ const switchCategory = (categoryId) => {
 
 // 商品数据
 const products = [
-  // 陶艺与黏土类
+  // taoyi（陶艺与黏土类）
   {
     id: 1,
-    name: '陶艺作品1',
+    name: '素韵萌蛋陶瓷罐',
     price: 59.9,
     sales: 25,
-    image: '/static/images/products/陶艺与黏土类/1144fc9caab572cb12b0733a76ca9699.jpg',
+    image: '/static/images/products/taoyi/1144fc9caab572cb12b0733a76ca9699.jpg',
     category: 'pottery'
   },
   {
     id: 2,
-    name: '陶艺作品2',
+    name: '瓷器摆件',
     price: 36.9,
     sales: 25,
-    image: '/static/images/products/陶艺与黏土类/6b2beff155c1b5933e4117b4ffbff9ad.jpg',
+    image: '/static/images/products/taoyi/6b2beff155c1b5933e4117b4ffbff9ad.jpg',
     category: 'pottery'
   },
   {
     id: 3,
-    name: '陶艺作品3',
+    name: '粘土钥匙扣',
     price: 12.6,
     sales: 25,
-    image: '/static/images/products/陶艺与黏土类/cc574253e06c1d6b5512364a37984da9.jpg',
+    image: '/static/images/products/taoyi/cc574253e06c1d6b5512364a37984da9.jpg',
     category: 'pottery'
   },
-  
-  // 布艺类
+
+  // buyi（布艺类）
   {
     id: 4,
-    name: '布艺作品1',
+    name: '彩韵方块编织挎包',
     price: 69.9,
     sales: 25,
-    image: '/static/images/products/布艺类/21c78981c09a84b7ea50d5a8c6d0489b.jpg',
+    image: '/static/images/products/buyi/21c78981c09a84b7ea50d5a8c6d0489b.jpg',
     category: 'fabric'
   },
   {
     id: 5,
-    name: '布艺作品2',
+    name: '雅韵花卉平安香包',
     price: 59.9,
     sales: 25,
-    image: '/static/images/products/布艺类/8b5e07edfd3c156da1dcae80db4ea766.jpg',
+    image: '/static/images/products/buyi/8b5e07edfd3c156da1dcae80db4ea766.jpg',
     category: 'fabric'
   },
   {
     id: 6,
-    name: '布艺作品3',
+    name: '绮绣团扇',
     price: 24,
     sales: 25,
-    image: '/static/images/products/布艺类/b1dc08fd5030a4774a7b0f102e42c9fd.jpg',
+    image: '/static/images/products/buyi/b1dc08fd5030a4774a7b0f102e42c9fd.jpg',
     category: 'fabric'
   },
   {
     id: 7,
-    name: '布艺作品4',
+    name: '荷塘月色',
     price: 35,
     sales: 25,
-    image: '/static/images/products/布艺类/b81feb570d0198c1dd0347cc3f2421cd.jpg',
+    image: '/static/images/products/buyi/b81feb570d0198c1dd0347cc3f2421cd.jpg',
     category: 'fabric'
   },
   {
     id: 8,
-    name: '布艺作品5',
+    name: '拼布上的东方雅韵',
     price: 42,
     sales: 25,
-    image: '/static/images/products/布艺类/bb03bf84cba0e26844c60aef77c64ccf.jpg',
+    image: '/static/images/products/buyi/bb03bf84cba0e26844c60aef77c64ccf.jpg',
     category: 'fabric'
   },
   {
     id: 9,
-    name: '布艺作品6',
+    name: '锦鲤异型秀团扇',
     price: 38,
     sales: 25,
-    image: '/static/images/products/布艺类/fab315e39a764e4e8f8f9126c42f24fe.jpg',
+    image: '/static/images/products/buyi/fab315e39a764e4e8f8f9126c42f24fe.jpg',
     category: 'fabric'
   },
-  
-  // 木竹藤艺类
+
+  // muzhu（木竹藤艺类）
   {
     id: 10,
-    name: '木竹藤艺作品1',
+    name: '朴雅竹编扇',
     price: 39.9,
     sales: 25,
-    image: '/static/images/products/木竹藤艺类/2b5fdf65a31cecf982e8f16ad8b4c099.jpg',
+    image: '/static/images/products/muzhu/2b5fdf65a31cecf982e8f16ad8b4c099.jpg',
     category: 'bamboo'
   },
   {
     id: 11,
-    name: '木竹藤艺作品2',
+    name: '生肖木雕小品',
     price: 9.9,
     sales: 25,
-    image: '/static/images/products/木竹藤艺类/3f31856ecbc1aea4642d44c664b2f68c.jpg',
+    image: '/static/images/products/muzhu/3f31856ecbc1aea4642d44c664b2f68c.jpg',
     category: 'bamboo'
   },
   {
     id: 12,
-    name: '木竹藤艺作品3',
+    name: '翠影翩迁竹蝶',
     price: 38.8,
     sales: 25,
-    image: '/static/images/products/木竹藤艺类/6475016e93be36a32bd4602c0bdd70eb.jpg',
+    image: '/static/images/products/muzhu/6475016e93be36a32bd4602c0bdd70eb.jpg',
     category: 'bamboo'
   },
-  
-  // 纸艺类
+
+  // zhiyi（纸艺类）
   {
     id: 13,
-    name: '纸艺作品1',
+    name: '福春瑞意剪纸',
     price: 11.88,
     sales: 25,
-    image: '/static/images/products/纸艺类/b90391b97818ea8f49461cd3a972a140.jpg',
+    image: '/static/images/products/zhiyi/b90391b97818ea8f49461cd3a972a140.jpg',
     category: 'paper'
   },
   {
     id: 14,
-    name: '纸艺作品2',
+    name: '哪吒闹海衍纸艺术',
     price: 10.88,
     sales: 25,
-    image: '/static/images/products/纸艺类/e125b41051682ef8f72cd7b4da19b33c.jpg',
+    image: '/static/images/products/zhiyi/e125b41051682ef8f72cd7b4da19b33c.jpg',
     category: 'paper'
   },
-  
-  // 其他类
+
+  // qita（其他类）
   {
     id: 15,
-    name: '其他手工艺品1',
+    name: '盲人穿串手工艺作品',
     price: 49.9,
     sales: 25,
-    image: '/static/images/products/其他类/47172a25924313106bbf35e8ed8ac035.jpg',
+    image: '/static/images/products/qita/47172a25924313106bbf35e8ed8ac035.jpg',
     category: 'other'
   },
   {
     id: 16,
-    name: '其他手工艺品2',
+    name: '环保易拉罐改造罐',
     price: 9.9,
     sales: 25,
-    image: '/static/images/products/其他类/ae5bfe0c38c520fc56ac3848e853c462.jpg',
+    image: '/static/images/products/qita/ae5bfe0c38c520fc56ac3848e853c462.jpg',
     category: 'other'
   }
 ]
+
 
 // 根据当前分类筛选商品
 const filteredProducts = computed(() => {
